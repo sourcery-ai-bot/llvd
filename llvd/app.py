@@ -39,9 +39,7 @@ class App:
             self.headers["Csrf-Token"] = cookies.get("JSESSIONID").replace(
                 '\"', "")
 
-            if cookies.get("li_at") == None:
-                return None
-            return 200
+            return None if cookies.get("li_at") is None else 200
 
     def run(self, cookies=None):
         """
@@ -72,29 +70,26 @@ class App:
 
                     if status is None:
                         print("\n")
-                        click.echo(
-                            click.style(f"Wrong credentials, try again", fg="red"))
+                        click.echo(click.style("Wrong credentials, try again", fg="red"))
                         sys.exit(0)
                     else:
                         self.download_entire_course()
 
         except requests.exceptions.ConnectionError:
             print("\n")
-            click.echo(click.style(
-                f"Failed to connect", fg="red"))
+            click.echo(click.style("Failed to connect", fg="red"))
 
     @staticmethod
     def resume_failed_ownloads():
         """
             Resume failed downloads
         """
-        current_files = [file for file in os.listdir() if ".mp4" in file]
-        if len(current_files) > 0:
+        if current_files := [file for file in os.listdir() if ".mp4" in file]:
             for file in current_files:
                 if os.stat(file).st_size == 0:
                     os.remove(file)
             print("\n")
-            click.echo(click.style(f"Resuming download..", fg="red"))
+            click.echo(click.style("Resuming download..", fg="red"))
 
     def download_entire_course(self):
         """
@@ -132,8 +127,7 @@ class App:
                         try:
                             subtitles = page_json['elements'][0]['selectedVideo']['transcript']
                         except:
-                            click.echo(click.style(
-                                f"Subtitles not found", fg="red"))
+                            click.echo(click.style("Subtitles not found", fg="red"))
                             subtitles = None
                         duration_in_ms = int(page_json['elements'][0]
                                              ['selectedVideo']['durationInSeconds']) * 1000
@@ -151,24 +145,25 @@ class App:
                     except Exception as e:
                         if 'url' in str(e):
                             click.echo(
-                                click.style(f"This video is locked, you probably need a premium account", fg="red"))
+                                click.style(
+                                    "This video is locked, you probably need a premium account",
+                                    fg="red",
+                                )
+                            )
+
                         else:
-                            click.echo(
-                                click.style(f"Failed to download this video", fg="red"))
+                            click.echo(click.style("Failed to download this video", fg="red"))
                     else:
                         if clean_name(video_name) not in current_files:
                             if subtitles is not None and self.caption:
-                                click.echo(click.style(
-                                    f"Fetching subtitles..", fg="green"))
+                                click.echo(click.style("Fetching subtitles..", fg="green"))
                                 subtitle_lines = subtitles['lines']
                                 write_subtitles(
                                     count, subtitle_lines, video_name, self.course_slug, chapter_name, duration_in_ms)
                             download_video(download_url, count,
                                            video_name, chapter_name, self.course_slug)
                         else:
-                            click.echo(
-                                click.style(f"skipping: " +
-                                            video_name + "\n", fg="green"))
+                            click.echo(click.style((f"skipping: {video_name}" + "\n"), fg="green"))
                         count += 1
             if len(exercise_files) > 0:
                 download_exercises(exercise_files, self.course_slug)

@@ -21,7 +21,7 @@ def download_video(url, index, filename, chapter_name, course_slug):
             response = requests.get(
                 url, stream=True, headers={'Accept-Encoding': None, 'Content-Encoding': 'gzip'})
             download_size = response.headers.get('content-length')
-            if download_size is None and maximum_retries > 0:
+            if download_size is None:
                 maximum_retries -= 1
             else:
                 break
@@ -46,8 +46,7 @@ def download_exercises(links, course_slug):
         Downloads exercises
     """
     maximum_retries = 5
-    click.echo(
-        click.style(f"Downloading exercise files..." + "\n", fg="green"))
+    click.echo(click.style("Downloading exercise files..." + "\n", fg="green"))
 
     for link in links:
 
@@ -60,7 +59,7 @@ def download_exercises(links, course_slug):
                 response = requests.get(
                     link, stream=True, headers={'Accept-Encoding': None, 'Content-Encoding': 'gzip'})
                 download_size = response.headers.get('content-length')
-                if download_size is None and maximum_retries > 0:
+                if download_size is None:
                     maximum_retries -= 1
                 else:
                     break

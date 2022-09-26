@@ -15,6 +15,5 @@ def parse_cookie_file():
                         '\"', "")
             return cookies
     except FileNotFoundError:
-        click.echo(
-            click.style(f"cookies.txt not found or is empty", fg="red"))
+        click.echo(click.style("cookies.txt not found or is empty", fg="red"))
         sys.exit(0)
